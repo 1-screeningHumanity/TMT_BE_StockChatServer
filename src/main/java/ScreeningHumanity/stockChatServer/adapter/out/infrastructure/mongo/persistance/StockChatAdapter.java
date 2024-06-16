@@ -6,6 +6,9 @@ import ScreeningHumanity.stockChatServer.application.port.out.LoadStockChatPort;
 import ScreeningHumanity.stockChatServer.application.port.out.SaveStockChatPort;
 import ScreeningHumanity.stockChatServer.application.port.out.dto.StockChatOutDto;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,9 +19,14 @@ public class StockChatAdapter implements LoadStockChatPort, SaveStockChatPort {
 	private final StockChatRepository stockChatRepository;
 
 	@Override
-	public Flux<StockChatOutDto> getChats(String stockCode) {
-		return StockChatOutDto.getStockChatEntityFlux(
-				stockChatRepository.findByStockCode(stockCode));
+	public Flux<StockChatOutDto> getChatsPagination(String stockCode, int pageSize, String lastId) {
+		Pageable pageable = PageRequest.of(0, pageSize);
+
+		if (lastId == null || lastId.isEmpty()) {
+			return StockChatOutDto.getStockChatEntityFlux(stockChatRepository.findByStockCodeAndIdLessThan(stockCode, pageable));
+		} else {
+			return StockChatOutDto.getStockChatEntityFlux(stockChatRepository.findByStockCodeAndIdLessThan(stockCode, new ObjectId(lastId), pageable));
+		}
 	}
 
 	@Override

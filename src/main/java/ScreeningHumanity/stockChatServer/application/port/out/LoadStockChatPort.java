@@ -4,6 +4,5 @@ import ScreeningHumanity.stockChatServer.application.port.out.dto.StockChatOutDt
 import reactor.core.publisher.Flux;
 
 public interface LoadStockChatPort {
-	// Flux<StockChatOutDto>
-	Flux<StockChatOutDto> getChats(String stockCode);
+	Flux<StockChatOutDto> getChatsPagination(String stockCode, int pageSize, String lastId);
 }

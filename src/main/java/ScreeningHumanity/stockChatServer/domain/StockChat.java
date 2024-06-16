@@ -35,6 +35,7 @@ public class StockChat {
 
 	private static StockChat getStockChat(StockChatOutDto dto) {
 		return StockChat.builder()
+				.id(dto.getId())
 				.stockCode(dto.getStockCode())
 				.message(dto.getMessage())
 				.sender(dto.getSender())

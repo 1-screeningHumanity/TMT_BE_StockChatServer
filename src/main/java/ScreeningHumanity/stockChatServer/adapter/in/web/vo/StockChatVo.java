@@ -6,5 +6,4 @@ import lombok.Getter;
 public class StockChatVo {
 	private String stockCode;
 	private String message;
-	private String sender;
 }

@@ -10,13 +10,15 @@ import reactor.core.publisher.Mono;
 
 @Getter
 public class StockChatOutDto {
+	private String id;
 	private String stockCode;
 	private String message;
 	private String sender;
 	private Instant createAt;
 
 	@Builder
-	public StockChatOutDto(String stockCode, String message, String sender, Instant createAt) {
+	public StockChatOutDto(String id, String stockCode, String message, String sender, Instant createAt) {
+		this.id = id;
 		this.stockCode = stockCode;
 		this.message = message;
 		this.sender = sender;
@@ -34,6 +36,7 @@ public class StockChatOutDto {
 
 	public static Mono<StockChatOutDto> getStockChatEntityMono(Mono<StockChatEntity> stockChatEntity) {
 		return stockChatEntity.map(entity -> StockChatOutDto.builder()
+				.id(entity.getId())
 				.stockCode(entity.getStockCode())
 				.message(entity.getMessage())
 				.sender(entity.getSender())
@@ -43,6 +46,7 @@ public class StockChatOutDto {
 
 	public static Flux<StockChatOutDto> getStockChatEntityFlux(Flux<StockChatEntity> stockChatEntity) {
 		return stockChatEntity.map(entity -> StockChatOutDto.builder()
+				.id(entity.getId())
 				.stockCode(entity.getStockCode())
 				.message(entity.getMessage())
 				.sender(entity.getSender())
