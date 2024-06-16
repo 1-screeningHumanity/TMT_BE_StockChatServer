@@ -5,6 +5,7 @@ import ScreeningHumanity.stockChatServer.domain.StockChat;
 import java.time.Instant;
 import lombok.Builder;
 import lombok.Getter;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Getter
@@ -31,7 +32,16 @@ public class StockChatOutDto {
 				.build();
 	}
 
-	public static Mono<StockChatOutDto> getStockChatEntity(Mono<StockChatEntity> stockChatEntity) {
+	public static Mono<StockChatOutDto> getStockChatEntityMono(Mono<StockChatEntity> stockChatEntity) {
+		return stockChatEntity.map(entity -> StockChatOutDto.builder()
+				.stockCode(entity.getStockCode())
+				.message(entity.getMessage())
+				.sender(entity.getSender())
+				.createAt(entity.getCreateAt())
+				.build());
+	}
+
+	public static Flux<StockChatOutDto> getStockChatEntityFlux(Flux<StockChatEntity> stockChatEntity) {
 		return stockChatEntity.map(entity -> StockChatOutDto.builder()
 				.stockCode(entity.getStockCode())
 				.message(entity.getMessage())

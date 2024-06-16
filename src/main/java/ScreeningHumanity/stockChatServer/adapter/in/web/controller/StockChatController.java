@@ -5,9 +5,14 @@ import ScreeningHumanity.stockChatServer.adapter.out.infrastructure.mongo.entity
 import ScreeningHumanity.stockChatServer.application.port.in.dto.StockChatInDto;
 import ScreeningHumanity.stockChatServer.application.port.in.usecase.StockChatUseCase;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -24,6 +29,12 @@ public class StockChatController {
 		return stockChatUseCase.sendChat(StockChatInDto.getStockChatVo(vo));
 	}
 
+	@GetMapping(value = "/chat/{stockCode}",  produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Flux<StockChatInDto> getChats(
+			@PathVariable String stockCode
+	) {
+		return stockChatUseCase.getChats(stockCode);
+	}
 }
 
 

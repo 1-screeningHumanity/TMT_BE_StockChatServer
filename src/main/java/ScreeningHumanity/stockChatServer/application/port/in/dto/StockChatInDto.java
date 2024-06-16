@@ -43,7 +43,8 @@ public class StockChatInDto {
 	}
 
 	public static Mono<StockChatInDto> getStockChatOutDto(
-			Mono<StockChatOutDto> stockChatOutDtoMono) {return stockChatOutDtoMono.map(dto -> StockChatInDto.builder()
+			Mono<StockChatOutDto> stockChatOutDtoMono) {
+		return stockChatOutDtoMono.map(dto -> StockChatInDto.builder()
 				.stockCode(dto.getStockCode())
 				.message(dto.getMessage())
 				.sender(dto.getSender())

@@ -29,6 +29,10 @@ public class StockChat {
 				.build();
 	}
 
+	public static Flux<StockChat> getStockChats(Flux<StockChatOutDto> dto) {
+		return dto.map(StockChat::getStockChat);
+	}
+
 	private static StockChat getStockChat(StockChatOutDto dto) {
 		return StockChat.builder()
 				.stockCode(dto.getStockCode())
@@ -36,9 +40,5 @@ public class StockChat {
 				.sender(dto.getSender())
 				.createAt(dto.getCreateAt())
 				.build();
-	}
-
-	public static Flux<StockChat> getStockChats(Flux<StockChatOutDto> dto) {
-		return dto.map(StockChat::getStockChat);
 	}
 }

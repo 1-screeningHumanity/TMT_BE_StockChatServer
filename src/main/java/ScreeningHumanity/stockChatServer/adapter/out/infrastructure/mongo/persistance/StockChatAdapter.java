@@ -17,12 +17,13 @@ public class StockChatAdapter implements LoadStockChatPort, SaveStockChatPort {
 
 	@Override
 	public Flux<StockChatOutDto> getChats(String stockCode) {
-		return null;
+		return StockChatOutDto.getStockChatEntityFlux(
+				stockChatRepository.findByStockCode(stockCode));
 	}
 
 	@Override
 	public Mono<StockChatOutDto> saveStockChat(StockChatOutDto dto) {
-		return StockChatOutDto.getStockChatEntity(
+		return StockChatOutDto.getStockChatEntityMono(
 				stockChatRepository.save(StockChatEntity.getStockChatOutDto(dto)));
 	}
 }
