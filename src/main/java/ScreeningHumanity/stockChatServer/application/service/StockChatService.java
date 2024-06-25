@@ -1,9 +1,11 @@
 package ScreeningHumanity.stockChatServer.application.service;
 
+import ScreeningHumanity.stockChatServer.application.port.in.dto.ChangeNickNameInDto;
 import ScreeningHumanity.stockChatServer.application.port.in.dto.StockChatInDto;
 import ScreeningHumanity.stockChatServer.application.port.in.usecase.StockChatUseCase;
 import ScreeningHumanity.stockChatServer.application.port.out.LoadStockChatPort;
 import ScreeningHumanity.stockChatServer.application.port.out.SaveStockChatPort;
+import ScreeningHumanity.stockChatServer.application.port.out.dto.ChangeNickNameOutDto;
 import ScreeningHumanity.stockChatServer.application.port.out.dto.StockChatOutDto;
 import ScreeningHumanity.stockChatServer.domain.StockChat;
 import org.springframework.stereotype.Service;
@@ -42,5 +44,10 @@ public class StockChatService implements StockChatUseCase {
 						StockChat.getStockChats(loadStockChatPort.getChatsPagination(stockCode, pageSize, lastId)))
 				.concatWith(stockChatSink.asFlux()
 						.filter(stockChat -> stockChat.getStockCode().equals(stockCode)));
+	}
+
+	@Override
+	public void changeNickName(ChangeNickNameInDto dto) {
+		saveStockChatPort.updateNickName(ChangeNickNameOutDto.getChangeNickNameInDto(dto));
 	}
 }
