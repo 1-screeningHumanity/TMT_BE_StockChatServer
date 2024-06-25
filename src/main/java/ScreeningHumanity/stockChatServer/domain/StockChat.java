@@ -18,6 +18,7 @@ public class StockChat {
 	private String stockCode;
 	private String message;
 	private String sender;
+	private String nickName;
 	private Instant createAt;
 
 	public static StockChat sendChat(StockChatInDto dto) {
@@ -25,6 +26,7 @@ public class StockChat {
 				.stockCode(dto.getStockCode())
 				.message(dto.getMessage())
 				.sender(dto.getSender())
+				.nickName(dto.getNickName())
 				.createAt(Instant.now())
 				.build();
 	}
@@ -39,6 +41,7 @@ public class StockChat {
 				.stockCode(dto.getStockCode())
 				.message(dto.getMessage())
 				.sender(dto.getSender())
+				.nickName(dto.getNickName())
 				.createAt(dto.getCreateAt())
 				.build();
 	}

@@ -1,14 +1,14 @@
 package ScreeningHumanity.stockChatServer.adapter.in.web.controller;
 
-import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-import ScreeningHumanity.stockChatServer.adapter.in.web.vo.StockChatVo;
+import ScreeningHumanity.stockChatServer.adapter.in.web.vo.in.StockChatInVo;
+import ScreeningHumanity.stockChatServer.adapter.in.web.vo.out.StockChatOutVo;
 import ScreeningHumanity.stockChatServer.application.port.in.dto.StockChatInDto;
 import ScreeningHumanity.stockChatServer.application.port.in.usecase.StockChatUseCase;
 import ScreeningHumanity.stockChatServer.global.common.token.DecodingToken;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,21 +29,23 @@ public class StockChatController {
 	private final DecodingToken decodingToken;
 
 	@PostMapping("/chat")
-	public Mono<StockChatInDto> sendChat(
+	public Mono<StockChatOutVo> sendChat(
 			@RequestHeader(AUTHORIZATION) String accessToken,
-			@RequestBody StockChatVo vo
+			@Valid @RequestBody StockChatInVo vo
 	) {
 		String uuid = decodingToken.getUuid(accessToken);
 
-		return stockChatUseCase.sendChat(StockChatInDto.getStockChatVo(vo, uuid));
+		return StockChatOutVo.getStockChatInDto(
+				stockChatUseCase.sendChat(StockChatInDto.getStockChatVo(vo, uuid)));
 	}
 
-	@GetMapping(value = "/chat/{stockCode}",  produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Flux<StockChatInDto> getChatsPagination(
+	@GetMapping(value = "/chat/{stockCode}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Flux<StockChatOutVo> getChatsPagination(
 			@PathVariable String stockCode,
 			@RequestParam(required = false) String lastId
 	) {
-		return stockChatUseCase.getChatsPagination(stockCode, 5, lastId);
+		return StockChatOutVo.getStockChatInDto(
+				stockChatUseCase.getChatsPagination(stockCode, 5, lastId));
 	}
 }
 

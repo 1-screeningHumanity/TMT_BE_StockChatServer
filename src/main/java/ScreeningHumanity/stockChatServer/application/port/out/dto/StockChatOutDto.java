@@ -14,14 +14,16 @@ public class StockChatOutDto {
 	private String stockCode;
 	private String message;
 	private String sender;
+	private String nickName;
 	private Instant createAt;
 
 	@Builder
-	public StockChatOutDto(String id, String stockCode, String message, String sender, Instant createAt) {
+	public StockChatOutDto(String id, String stockCode, String message, String sender, String nickName, Instant createAt) {
 		this.id = id;
 		this.stockCode = stockCode;
 		this.message = message;
 		this.sender = sender;
+		this.nickName = nickName;
 		this.createAt = createAt;
 	}
 
@@ -30,6 +32,7 @@ public class StockChatOutDto {
 				.stockCode(stockChat.getStockCode())
 				.message(stockChat.getMessage())
 				.sender(stockChat.getSender())
+				.nickName(stockChat.getNickName())
 				.createAt(stockChat.getCreateAt())
 				.build();
 	}
@@ -40,6 +43,7 @@ public class StockChatOutDto {
 				.stockCode(entity.getStockCode())
 				.message(entity.getMessage())
 				.sender(entity.getSender())
+				.nickName(entity.getNickName())
 				.createAt(entity.getCreateAt())
 				.build());
 	}
@@ -50,6 +54,7 @@ public class StockChatOutDto {
 				.stockCode(entity.getStockCode())
 				.message(entity.getMessage())
 				.sender(entity.getSender())
+				.nickName(entity.getNickName())
 				.createAt(entity.getCreateAt())
 				.build());
 	}
