@@ -15,13 +15,15 @@ public class StockChatEntity {
 	private String stockCode;
 	private String message;
 	private String sender;
+	private String nickName;
 	private Instant createAt;
 
 	@Builder
-	public StockChatEntity(String stockCode, String message, String sender, Instant createAt) {
+	public StockChatEntity(String stockCode, String message, String sender, String nickName, Instant createAt) {
 		this.stockCode = stockCode;
 		this.message = message;
 		this.sender = sender;
+		this.nickName = nickName;
 		this.createAt = createAt;
 	}
 
@@ -30,6 +32,7 @@ public class StockChatEntity {
 				.stockCode(dto.getStockCode())
 				.message(dto.getMessage())
 				.sender(dto.getSender())
+				.nickName(dto.getNickName())
 				.createAt(dto.getCreateAt())
 				.build();
 	}
