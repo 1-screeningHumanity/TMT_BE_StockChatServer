@@ -9,11 +9,13 @@ import ScreeningHumanity.stockChatServer.application.port.out.dto.ChangeNickName
 import ScreeningHumanity.stockChatServer.application.port.out.dto.StockChatOutDto;
 import ScreeningHumanity.stockChatServer.domain.StockChat;
 import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
+@Slf4j
 @Service
 //@RequiredArgsConstructor
 public class StockChatService implements StockChatUseCase {
@@ -31,20 +33,46 @@ public class StockChatService implements StockChatUseCase {
 	}
 
 
+//	@Override
+//	public Mono<StockChatInDto> sendChat(StockChatInDto dto) {
+//		return Mono.fromCallable(() -> StockChat.sendChat(dto))
+//				.flatMap(stockChat -> StockChatInDto.getStockChatOutDto(
+//						saveStockChatPort.saveStockChat(StockChatOutDto.getStockChat(stockChat))))
+//				.doOnNext(stockChatSink::tryEmitNext);
+//	}
+//
+//	@Override
+//	public Flux<StockChatInDto> getReactiveChats(String stockCode) {
+//		return stockChatSink.asFlux()
+//				.filter(stockChat -> stockChat.getStockCode().equals(stockCode))
+//				.mergeWith(Flux.interval(Duration.ofSeconds(10))
+//						.map(tick -> StockChatInDto.builder().message("heartbeat").build()));
+//	}
+
 	@Override
 	public Mono<StockChatInDto> sendChat(StockChatInDto dto) {
 		return Mono.fromCallable(() -> StockChat.sendChat(dto))
 				.flatMap(stockChat -> StockChatInDto.getStockChatOutDto(
 						saveStockChatPort.saveStockChat(StockChatOutDto.getStockChat(stockChat))))
-				.doOnNext(stockChatSink::tryEmitNext);
+				.doOnNext(stockChat -> {
+					log.info("Emitting stock chat: {}", stockChat);
+					Sinks.EmitResult result = stockChatSink.tryEmitNext(stockChat);
+					if (result.isFailure()) {
+						log.error("Failed to emit stock chat: {}", result);
+					}
+				});
 	}
 
 	@Override
 	public Flux<StockChatInDto> getReactiveChats(String stockCode) {
+		// 주기적으로 방출할 더미 데이터 생성
+		Flux<StockChatInDto> heartbeatStream = Flux.interval(Duration.ofSeconds(10))
+				.map(tick -> StockChatInDto.builder().message("heartbeat").build());
+
 		return stockChatSink.asFlux()
 				.filter(stockChat -> stockChat.getStockCode().equals(stockCode))
-				.mergeWith(Flux.interval(Duration.ofSeconds(10))
-						.map(tick -> StockChatInDto.builder().message("heartbeat").build()));
+				.mergeWith(heartbeatStream)
+				.doOnCancel(() -> log.info("Client disconnected for stock code: {}", stockCode));
 	}
 
 	@Override
