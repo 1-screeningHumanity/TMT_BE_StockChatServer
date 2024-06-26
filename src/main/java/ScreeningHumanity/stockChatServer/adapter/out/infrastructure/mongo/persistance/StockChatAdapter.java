@@ -29,8 +29,7 @@ public class StockChatAdapter implements LoadStockChatPort, SaveStockChatPort {
 					stockChatRepository.findByStockCodeAndIdLessThan(stockCode, pageable));
 		} else {
 			return StockChatOutDto.getStockChatEntityFlux(
-					stockChatRepository.findByStockCodeAndIdLessThan(stockCode,
-							new ObjectId(lastId), pageable));
+					stockChatRepository.findByStockCodeAndIdLessThan(stockCode, pageable, new ObjectId(lastId)));
 		}
 	}
 
