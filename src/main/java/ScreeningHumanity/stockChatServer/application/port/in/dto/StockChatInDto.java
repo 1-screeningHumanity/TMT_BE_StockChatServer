@@ -64,4 +64,15 @@ public class StockChatInDto {
 				.createAt(dto.getCreateAt().atZone(ZoneId.of("Asia/Seoul")))    // Instant to ZonedDateTime
 				.build());
 	}
+
+	public static Flux<StockChatInDto> getStockChatOutDtoFlux(Flux<StockChatOutDto> stockChatOutDtoMono) {
+		return stockChatOutDtoMono.map(dto -> StockChatInDto.builder()
+				.id(dto.getId())
+				.stockCode(dto.getStockCode())
+				.message(dto.getMessage())
+				.sender(dto.getSender())
+				.nickName(dto.getNickName())
+				.createAt(dto.getCreateAt().atZone(ZoneId.of("Asia/Seoul")))    // Instant to ZonedDateTime
+				.build());
+	}
 }

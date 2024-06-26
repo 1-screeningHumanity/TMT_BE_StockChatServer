@@ -9,6 +9,7 @@ import ScreeningHumanity.stockChatServer.application.port.out.dto.ChangeNickName
 import ScreeningHumanity.stockChatServer.application.port.out.dto.StockChatOutDto;
 import ScreeningHumanity.stockChatServer.domain.StockChat;
 import java.time.Duration;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -17,62 +18,22 @@ import reactor.core.publisher.Sinks;
 
 @Slf4j
 @Service
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class StockChatService implements StockChatUseCase {
 
-	private final Sinks.Many<StockChatInDto> stockChatSink;
 	private final SaveStockChatPort saveStockChatPort;
 	private final LoadStockChatPort loadStockChatPort;
-
-	public StockChatService(
-			SaveStockChatPort saveStockChatPort,
-			LoadStockChatPort loadStockChatPort) {
-		this.stockChatSink = Sinks.many().multicast().onBackpressureBuffer();
-		this.saveStockChatPort = saveStockChatPort;
-		this.loadStockChatPort = loadStockChatPort;
-	}
-
-
-//	@Override
-//	public Mono<StockChatInDto> sendChat(StockChatInDto dto) {
-//		return Mono.fromCallable(() -> StockChat.sendChat(dto))
-//				.flatMap(stockChat -> StockChatInDto.getStockChatOutDto(
-//						saveStockChatPort.saveStockChat(StockChatOutDto.getStockChat(stockChat))))
-//				.doOnNext(stockChatSink::tryEmitNext);
-//	}
-//
-//	@Override
-//	public Flux<StockChatInDto> getReactiveChats(String stockCode) {
-//		return stockChatSink.asFlux()
-//				.filter(stockChat -> stockChat.getStockCode().equals(stockCode))
-//				.mergeWith(Flux.interval(Duration.ofSeconds(10))
-//						.map(tick -> StockChatInDto.builder().message("heartbeat").build()));
-//	}
 
 	@Override
 	public Mono<StockChatInDto> sendChat(StockChatInDto dto) {
 		return Mono.fromCallable(() -> StockChat.sendChat(dto))
 				.flatMap(stockChat -> StockChatInDto.getStockChatOutDto(
-						saveStockChatPort.saveStockChat(StockChatOutDto.getStockChat(stockChat))))
-				.doOnNext(stockChat -> {
-					log.info("Emitting stock chat: {}", stockChat);
-					Sinks.EmitResult result = stockChatSink.tryEmitNext(stockChat);
-					if (result.isFailure()) {
-						log.error("Failed to emit stock chat: {}", result);
-					}
-				});
+						saveStockChatPort.saveStockChat(StockChatOutDto.getStockChat(stockChat))));
 	}
 
 	@Override
 	public Flux<StockChatInDto> getReactiveChats(String stockCode) {
-		// 주기적으로 방출할 더미 데이터 생성
-		Flux<StockChatInDto> heartbeatStream = Flux.interval(Duration.ofSeconds(10))
-				.map(tick -> StockChatInDto.builder().message("heartbeat").build());
-
-		return stockChatSink.asFlux()
-				.filter(stockChat -> stockChat.getStockCode().equals(stockCode))
-				.mergeWith(heartbeatStream)
-				.doOnCancel(() -> log.info("Client disconnected for stock code: {}", stockCode));
+		return StockChatInDto.getStockChatOutDtoFlux(loadStockChatPort.getReactiveChats(stockCode));
 	}
 
 	@Override
