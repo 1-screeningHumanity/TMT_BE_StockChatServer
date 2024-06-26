@@ -45,11 +45,8 @@ public class StockChatController {
 	@GetMapping(value = "/reactive-chat/{stockCode}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<StockChatOutVo> getReactiveChats(
 			@PathVariable String stockCode) {
-		return StockChatOutVo.getStockChatInDto(stockChatUseCase.getReactiveChats(stockCode))
-				.onErrorResume(e -> {
-					log.info("Error is SSE stream {}", e.getMessage());
-					return Flux.empty();
-				} );
+		log.info("StockCode = {}", stockCode);
+		return StockChatOutVo.getStockChatInDto(stockChatUseCase.getReactiveChats(stockCode));
 	}
 
 	@GetMapping(value = "/chat/{stockCode}/{pageSize}")
