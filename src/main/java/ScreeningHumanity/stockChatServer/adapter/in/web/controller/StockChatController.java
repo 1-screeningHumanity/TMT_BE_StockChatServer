@@ -47,7 +47,7 @@ public class StockChatController {
 			@PathVariable String stockCode) {
 		return StockChatOutVo.getStockChatInDto(stockChatUseCase.getReactiveChats(stockCode))
 				.onErrorResume(e -> {
-					log.error("Error is SSE stream ", e);
+					log.info("Error is SSE stream {}", e.getMessage());
 					return Flux.empty();
 				} );
 	}
