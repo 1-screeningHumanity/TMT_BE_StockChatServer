@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Document(collection = "stock_chat")
 public class StockChatEntity {
+
 	@Id
 	private String id;
 	private String stockCode;
@@ -19,7 +20,9 @@ public class StockChatEntity {
 	private Instant createAt;
 
 	@Builder
-	public StockChatEntity(String stockCode, String message, String sender, String nickName, Instant createAt) {
+	public StockChatEntity(String id, String stockCode, String message, String sender, String nickName,
+			Instant createAt) {
+		this.id = id;
 		this.stockCode = stockCode;
 		this.message = message;
 		this.sender = sender;
@@ -34,6 +37,17 @@ public class StockChatEntity {
 				.sender(dto.getSender())
 				.nickName(dto.getNickName())
 				.createAt(dto.getCreateAt())
+				.build();
+	}
+
+	public static StockChatEntity getReactiveStockChatEntity(org.bson.Document document) {
+		return StockChatEntity.builder()
+				.id(document.getObjectId("_id").toString())
+				.stockCode(document.getString("stockCode"))
+				.message(document.getString("message"))
+				.sender(document.getString("sender"))
+				.nickName(document.getString("nickName"))
+				.createAt(document.getDate("createAt").toInstant())
 				.build();
 	}
 }
