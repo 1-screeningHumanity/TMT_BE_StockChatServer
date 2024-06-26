@@ -10,6 +10,7 @@ import ScreeningHumanity.stockChatServer.global.common.token.DecodingToken;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @RestController
 //@RequestMapping("/stockItem")
 @RequiredArgsConstructor
@@ -43,7 +45,11 @@ public class StockChatController {
 	@GetMapping(value = "/reactive-chat/{stockCode}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<StockChatOutVo> getReactiveChats(
 			@PathVariable String stockCode) {
-		return StockChatOutVo.getStockChatInDto(stockChatUseCase.getReactiveChats(stockCode));
+		return StockChatOutVo.getStockChatInDto(stockChatUseCase.getReactiveChats(stockCode))
+				.onErrorResume(e -> {
+					log.error("Error is SSE stream ", e);
+					return Flux.empty();
+				} );
 	}
 
 	@GetMapping(value = "/chat/{stockCode}/{pageSize}")
