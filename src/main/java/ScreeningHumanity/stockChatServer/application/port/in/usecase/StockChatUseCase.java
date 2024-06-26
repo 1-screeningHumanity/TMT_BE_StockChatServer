@@ -8,6 +8,8 @@ import reactor.core.publisher.Mono;
 public interface StockChatUseCase {
 	Mono<StockChatInDto> sendChat(StockChatInDto dto);
 
+	Flux<StockChatInDto> getReactiveChats(String stockCode);
+
 	Flux<StockChatInDto> getChatsPagination(String stockCode, int pageSize, String lastId);
 
 	void changeNickName(ChangeNickNameInDto dto);

@@ -21,6 +21,9 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URl}
 
+kafka:
+  bootstrap-server: ${KAFKA_SERVER}
+
 springdoc:
   packages-to-scan: ScreeningHumanity.stockChatServer
   default-consumes-media-type: application/json;charset=UTF-8

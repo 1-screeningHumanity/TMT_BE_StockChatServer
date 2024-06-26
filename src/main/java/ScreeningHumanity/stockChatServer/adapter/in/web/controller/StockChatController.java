@@ -8,6 +8,7 @@ import ScreeningHumanity.stockChatServer.application.port.in.dto.StockChatInDto;
 import ScreeningHumanity.stockChatServer.application.port.in.usecase.StockChatUseCase;
 import ScreeningHumanity.stockChatServer.global.common.token.DecodingToken;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,14 +40,19 @@ public class StockChatController {
 				stockChatUseCase.sendChat(StockChatInDto.getStockChatVo(vo, uuid)));
 	}
 
-	@GetMapping(value = "/chat/{stockCode}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@GetMapping(value = "/reactive-chat/{stockCode}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Flux<StockChatOutVo> getReactiveChats(
+			@PathVariable String stockCode) {
+		return StockChatOutVo.getStockChatInDto(stockChatUseCase.getReactiveChats(stockCode));
+	}
+
+	@GetMapping(value = "/chat/{stockCode}/{pageSize}")
 	public Flux<StockChatOutVo> getChatsPagination(
-			@PathVariable String stockCode,
+			@PathVariable("stockCode") String stockCode,
+			@PathVariable("pageSize") @Min(value = 1) Integer pageSize,
 			@RequestParam(required = false) String lastId
 	) {
 		return StockChatOutVo.getStockChatInDto(
-				stockChatUseCase.getChatsPagination(stockCode, 5, lastId));
+				stockChatUseCase.getChatsPagination(stockCode, pageSize, lastId));
 	}
 }
-
-

@@ -39,11 +39,15 @@ public class StockChatService implements StockChatUseCase {
 	}
 
 	@Override
+	public Flux<StockChatInDto> getReactiveChats(String stockCode) {
+		return stockChatSink.asFlux()
+				.filter(stockChat -> stockChat.getStockCode().equals(stockCode));
+	}
+
+	@Override
 	public Flux<StockChatInDto> getChatsPagination(String stockCode, int pageSize, String lastId) {
 		return StockChatInDto.getStockChats(
-						StockChat.getStockChats(loadStockChatPort.getChatsPagination(stockCode, pageSize, lastId)))
-				.concatWith(stockChatSink.asFlux()
-						.filter(stockChat -> stockChat.getStockCode().equals(stockCode)));
+				StockChat.getStockChats(loadStockChatPort.getChatsPagination(stockCode, pageSize, lastId)));
 	}
 
 	@Override
