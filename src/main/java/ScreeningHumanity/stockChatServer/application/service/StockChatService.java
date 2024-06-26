@@ -8,6 +8,7 @@ import ScreeningHumanity.stockChatServer.application.port.out.SaveStockChatPort;
 import ScreeningHumanity.stockChatServer.application.port.out.dto.ChangeNickNameOutDto;
 import ScreeningHumanity.stockChatServer.application.port.out.dto.StockChatOutDto;
 import ScreeningHumanity.stockChatServer.domain.StockChat;
+import java.time.Duration;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -41,7 +42,9 @@ public class StockChatService implements StockChatUseCase {
 	@Override
 	public Flux<StockChatInDto> getReactiveChats(String stockCode) {
 		return stockChatSink.asFlux()
-				.filter(stockChat -> stockChat.getStockCode().equals(stockCode));
+				.filter(stockChat -> stockChat.getStockCode().equals(stockCode))
+				.mergeWith(Flux.interval(Duration.ofSeconds(10))
+						.map(tick -> StockChatInDto.builder().message("heartbeat").build()));
 	}
 
 	@Override
