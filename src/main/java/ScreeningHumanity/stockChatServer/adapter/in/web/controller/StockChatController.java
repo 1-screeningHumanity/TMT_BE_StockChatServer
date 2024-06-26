@@ -42,7 +42,7 @@ public class StockChatController {
 				stockChatUseCase.sendChat(StockChatInDto.getStockChatVo(vo, uuid)));
 	}
 
-	@GetMapping(value = "/reactive-chat/{stockCode}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@GetMapping(value = "/chat/reactive/{stockCode}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<StockChatOutVo> getReactiveChats(
 			@PathVariable String stockCode) {
 		log.info("StockCode = {}", stockCode);
